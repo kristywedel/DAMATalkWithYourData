@@ -1,0 +1,52 @@
+Prompt 1: Setting Up the Data Layer (setup_database.py)
+Create setup_database.py, a script that:
+
+Loads products and relationships from data.json.
+Creates a SQLite database (products.db) with:
+A products table (name, description, category).
+A relationships table (entity1, relationship, entity2).
+Inserts data dynamically, replacing duplicates.
+Prints a confirmation message when setup is complete.
+
+Prompt 2: FAISS, LLM, and Supporting Functions (faiss_and_utils.py)
+Create faiss_and_utils.py, a utility script that:
+
+Encodes product descriptions from data.json using sentence-transformers/all-MiniLM-L6-v2.
+Initializes FAISS for fast similarity search.
+Provides a function query_faiss(query: str, top_k: int = 3) to:
+Find the top k most relevant products.
+Implements recursive SQL queries to retrieve related entities from SQLite.
+Uses Presidio for PII redaction.
+Loads an open-source LLM (Mistral 7B or OpenChat) via transformers.
+Provides generate_response(context: dict, query: str) -> str that:
+Accepts aggregated data from SQLite, FAISS, and relationships.
+Passes it to the LLM for a chatbot response.
+Ensures FAISS and LLM initialize only once for efficiency.
+
+
+Prompt 3: Building the Chatbot API (app.py)
+Create app.py, a FastAPI-based chatbot that:
+
+Loads product data from SQLite (products.db).
+Uses FAISS (query_faiss()) from faiss_and_utils.py.
+Uses recursive SQL queries (get_related_entities()) from faiss_and_utils.py.
+Generates responses using an LLM (generate_response()) from faiss_and_utils.py.
+Provides an API endpoint /chat that:
+Accepts user queries via POST.
+Searches in SQLite, FAISS, and related entities.
+Aggregates results and calls the LLM for a chatbot response.
+Uses CORS middleware to allow web-based access.
+Runs with uvicorn at 127.0.0.1:5000.
+Ensures FAISS and LLM do not reload on each request.
+
+
+Prompt 4: Creating the Chat Interface (index.html)
+Create index.html, a simple chat interface that:
+
+Lets users ask queries via a chatbox.
+Sends requests to http://127.0.0.1:5000/chat using fetch().
+Displays chatbot responses dynamically.
+Uses CSS for styling.
+Maintains chat history.
+Supports "Enter" key submission.
+Handles errors if the API is unavailable.

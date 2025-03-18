@@ -1,0 +1,36 @@
+{
+  "products": [
+    { "name": "SolarFlare Espresso", "description": "A bold, triple-shot espresso blend with hints of caramelized citrus.", "category": "Beverage" },
+    { "name": "CosmoLatte", "description": "A velvety latte infused with lavender and galaxy-inspired shimmer.", "category": "Beverage" },
+    { "name": "Asteroid Cold Brew", "description": "A nitrogen-infused cold brew with a smooth, dark chocolate finish.", "category": "Beverage" },
+    { "name": "Nebula Nitro", "description": "A nitro-charged coffee with a creamy texture, topped with stardust cinnamon.", "category": "Beverage" },
+    { "name": "Lunar Macchiato", "description": "An ethereal macchiato layered with moon-spice syrup and a dash of starlight foam.", "category": "Beverage" },
+    { "name": "Rocket Fuel Drip", "description": "An extra-caffeinated dark roast blend for an intergalactic energy boost.", "category": "Beverage" },
+    { "name": "Milky Way Mocha", "description": "Rich dark chocolate with a hint of sea salt, blended with steamed oat milk.", "category": "Beverage" },
+    { "name": "Zero-Gravity Matcha", "description": "A vibrant matcha latte topped with foamy clouds of vanilla cold foam.", "category": "Beverage" },
+    { "name": "Interstellar Chai", "description": "Spiced chai tea latte infused with hints of black pepper and star anise.", "category": "Beverage" },
+    { "name": "Galactic Refresher", "description": "A cold, sparkling hibiscus tea with floating boba pearls resembling tiny planets.", "category": "Beverage" },
+    { "name": "Supernova Pumpkin Spice", "description": "A seasonal fall favorite with bold pumpkin spice flavors.", "category": "Seasonal Special" },
+    { "name": "Comet Caramel Crunch", "description": "A winter special with caramel and crunchy toffee bits.", "category": "Seasonal Special" },
+    { "name": "Meteor Mint Mocha", "description": "Holiday limited-edition mocha with cool mint and chocolate.", "category": "Seasonal Special" },
+    { "name": "BrewGalaxy Mug", "description": "Glow-in-the-dark mug with constellations design.", "category": "Merchandise" },
+    { "name": "Cosmo Cup", "description": "Reusable cup with NFC chip to track loyalty points.", "category": "Merchandise" },
+    { "name": "Latte Art from Mars Workshop", "description": "Learn advanced latte art techniques with a cosmic twist.", "category": "Event" },
+    { "name": "Caffeine & Constellations Night", "description": "Coffee tasting under the stars with expert astronomers.", "category": "Event" }
+  ],
+  "relationships": [
+    { "entity1": "SolarFlare Espresso", "relationship": "similar_to", "entity2": "CosmoLatte" },
+    { "entity1": "CosmoLatte", "relationship": "contains", "entity2": "Lavender" },
+    { "entity1": "CosmoLatte", "relationship": "similar_to", "entity2": "Nebula Nitro" },
+    { "entity1": "Nebula Nitro", "relationship": "similar_to", "entity2": "Milky Way Mocha" },
+    { "entity1": "Asteroid Cold Brew", "relationship": "similar_to", "entity2": "Rocket Fuel Drip" },
+    { "entity1": "Rocket Fuel Drip", "relationship": "stronger_than", "entity2": "Nebula Nitro" },
+    { "entity1": "Lunar Macchiato", "relationship": "paired_with", "entity2": "Milky Way Mocha" },
+    { "entity1": "Zero-Gravity Matcha", "relationship": "similar_to", "entity2": "Interstellar Chai" },
+    { "entity1": "Supernova Pumpkin Spice", "relationship": "seasonal_with", "entity2": "Comet Caramel Crunch" },
+    { "entity1": "Meteor Mint Mocha", "relationship": "seasonal_with", "entity2": "Comet Caramel Crunch" },
+    { "entity1": "BrewGalaxy Mug", "relationship": "bundled_with", "entity2": "Cosmo Cup" },
+    { "entity1": "Latte Art from Mars Workshop", "relationship": "event_for", "entity2": "CosmoLatte" },
+    { "entity1": "Caffeine & Constellations Night", "relationship": "features", "entity2": "Galactic Refresher" }
+  ]
+}
