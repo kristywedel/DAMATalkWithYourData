@@ -8,39 +8,30 @@ A relationships table (entity1, relationship, entity2).
 Inserts data dynamically, replacing duplicates.
 Prints a confirmation message when setup is complete.
 
-Prompt 2: FAISS, LLM, and Supporting Functions (faiss_and_utils.py)
-Create faiss_and_utils.py, a utility script that:
-
-Encodes product descriptions from data.json using sentence-transformers/all-MiniLM-L6-v2.
-Initializes FAISS for fast similarity search.
-Provides a function query_faiss(query: str, top_k: int = 3) to:
-Find the top k most relevant products.
-Implements recursive SQL queries to retrieve related entities from SQLite.
-Uses Presidio for PII redaction.
-Loads an open-source LLM (Mistral 7B or OpenChat) via transformers.
-Provides generate_response(context: dict, query: str) -> str that:
-Accepts aggregated data from SQLite, FAISS, and relationships.
-Passes it to the LLM for a chatbot response.
-Ensures FAISS and LLM initialize only once for efficiency.
-
-
-Prompt 3: Building the Chatbot API (app.py)
+Prompt 2: app.py
 Create app.py, a FastAPI-based chatbot that:
 
-Loads product data from SQLite (products.db).
-Uses FAISS (query_faiss()) from faiss_and_utils.py.
-Uses recursive SQL queries (get_related_entities()) from faiss_and_utils.py.
-Generates responses using an LLM (generate_response()) from faiss_and_utils.py.
+Loads product and relationship data from data.json into SQLite (products.db).
+Encodes product descriptions from data.json using sentence-transformers/all-MiniLM-L6-v2.
+Uses FAISS for semantic search to find similar products.
+Uses recursive SQL queries to find related entities from the relationships table.
+Integrates an open-source LLM (TheBloke/Mistral-7B-Instruct-v0.1-GGUF) using transformers.
+Implements Presidio for PII redaction to protect user data.
 Provides an API endpoint /chat that:
 Accepts user queries via POST.
-Searches in SQLite, FAISS, and related entities.
-Aggregates results and calls the LLM for a chatbot response.
-Uses CORS middleware to allow web-based access.
-Runs with uvicorn at 127.0.0.1:5000.
-Ensures FAISS and LLM do not reload on each request.
+Searches for relevant results in:
+SQLite (structured product descriptions).
+FAISS (semantic similarity search).
+Graph-based relationships (via recursive SQL queries).
+Accepts aggregated data from SQLite, FAISS, and relationships.
+Passes the aggregated data to the LLM for chatbot response generation.
+Uses CORS middleware for web-based access.
+Serves a static front-end (index.html) for user interaction.
+Ensures FAISS and LLM initialize only once to improve performance.
+Runs using uvicorn at 127.0.0.1:5000.
 
 
-Prompt 4: Creating the Chat Interface (index.html)
+Prompt 3: Creating the Chat Interface (index.html)
 Create index.html, a simple chat interface that:
 
 Lets users ask queries via a chatbox.
@@ -50,3 +41,21 @@ Uses CSS for styling.
 Maintains chat history.
 Supports "Enter" key submission.
 Handles errors if the API is unavailable.
+
+
+Prompt 4: Validation Prompt
+Create a validation script (validate_chatbot.py) that:
+
+Ensures the chatbot API (app.py) runs correctly using FastAPI and Uvicorn.
+Confirms FAISS is initialized properly and can return relevant products from data.json.
+Validates SQLite (products.db) has expected tables (products and relationships) and is populated.
+Checks if the LLM (TheBloke/Mistral-7B-Instruct-v0.1-GGUF) is loaded and responding.
+Verifies /chat endpoint behavior by:
+Sending test queries and confirming responses.
+Ensuring FAISS returns semantic matches for vague queries.
+Checking SQLite for exact lookup queries.
+Running recursive SQL queries to validate relationship-based responses.
+Ensuring the LLM generates a contextual response from aggregated data.
+Validates session management by checking conversation_history.
+Verifies CORS is enabled for frontend interaction.
+Outputs a detailed validation report, logging errors if any steps fail.

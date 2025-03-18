@@ -1,0 +1,24 @@
+Based on this space-themed coffee shop data, here are some good sample queries to test the system:
+"What's your strongest coffee drink?"
+This should return information about Rocket Fuel Drip and its relationship to other drinks
+"Tell me about your seasonal winter drinks"
+This should return details about Comet Caramel Crunch and Meteor Mint Mocha
+"I like lattes with unique flavors. What do you recommend?"
+This should match CosmoLatte with its lavender infusion and connect to related drinks
+"Do you have any special events coming up?"
+This should return information about both the Latte Art Workshop and Caffeine & Constellations Night
+"What's similar to the Milky Way Mocha?"
+This should show the relationships with Nebula Nitro and Lunar Macchiato
+"I need something with extra caffeine"
+This should highlight the Rocket Fuel Drip and SolarFlare Espresso
+"What non-coffee drinks do you have?"
+This should return information about Zero-Gravity Matcha, Interstellar Chai, and Galactic Refresher
+"Tell me about your cold drinks"
+This should match Asteroid Cold Brew, Nebula Nitro, and Galactic Refresher
+These queries test different aspects of the system:
+Relationship matching
+Category filtering
+Similarity search
+Event information
+Product recommendations
+Specific attribute queries
