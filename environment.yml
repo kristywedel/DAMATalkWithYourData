@@ -6,16 +6,19 @@ channels:
 dependencies:
   - python=3.10
   - pip
-  - pytorch
-  - faiss-cpu
+  - pytorch  # Ensure CUDA-compatible PyTorch is installed
+  - cudatoolkit  # Installs CUDA libraries for GPU support
+  - faiss-cpu  # Use 'faiss-gpu' if your GPU supports it
   - numpy
   - sqlite
+  - presidio-analyzer
+  - presidio-anonymizer
+  - accelerate
+  - transformers
+  - huggingface-hub
+  - fastapi
+  - uvicorn
+  - sentence-transformers
+  - pydantic
   - pip:
-      - fastapi==0.104.1
-      - uvicorn==0.24.0
-      - sentence-transformers==2.2.2
-      - transformers==4.36.2
-      - accelerate>=0.26.0
-      - ctransformers==0.2.27
-      - pydantic==2.4.2
-      - huggingface-hub==0.19.4
+      - ctransformers[cuda]  # Install CUDA-compatible version of ctransformers

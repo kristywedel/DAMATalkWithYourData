@@ -9,27 +9,19 @@ Inserts data dynamically, replacing duplicates.
 Prints a confirmation message when setup is complete.
 
 Prompt 2: app.py
-Create app.py, a FastAPI-based chatbot that:
+Create a FastAPI-based product chatbot API that integrates a database search and a locally hosted LLM. The API should:
 
-Loads product and relationship data from data.json into SQLite (products.db).
-Encodes product descriptions from data.json using sentence-transformers/all-MiniLM-L6-v2.
-Uses FAISS for semantic search to find similar products.
-Uses recursive SQL queries to find related entities from the relationships table.
-Integrates an open-source LLM (TheBloke/Mistral-7B-Instruct-v0.1-GGUF) using transformers.
-Implements Presidio for PII redaction to protect user data.
-Provides an API endpoint /chat that:
-Accepts user queries via POST.
-Searches for relevant results in:
-SQLite (structured product descriptions).
-FAISS (semantic similarity search).
-Graph-based relationships (via recursive SQL queries).
-Accepts aggregated data from SQLite, FAISS, and relationships.
-Passes the aggregated data to the LLM for chatbot response generation.
-Uses CORS middleware for web-based access.
-Serves a static front-end (index.html) for user interaction.
-Ensures FAISS and LLM initialize only once to improve performance.
-Runs using uvicorn at 127.0.0.1:5000.
-
+Use FastAPI with CORS middleware.
+Have endpoints:
+GET / returning a simple HTML message.
+POST /chat accepting a user query, redacting PII using Presidio, performing a database search (SQLite, FAISS), and generating a response using an external LLM module.
+Separate concerns:
+Database search in database_search.py, using SQLite, FAISS, and relationship-based retrieval.
+LLM processing in llm_model.py, loading a GGUF-based Llama-2-7B-Chat model via ctransformers and generating responses.
+Use Pydantic models for request/response validation.
+Run locally on 127.0.0.1:5000 with uvicorn, supporting live reload.
+Ensure error handling for missing data or model issues.
+Follow best practices for modularity and maintainability.
 
 Prompt 3: Creating the Chat Interface (index.html)
 Create index.html, a simple chat interface that:
@@ -49,7 +41,7 @@ Create a validation script (validate_chatbot.py) that:
 Ensures the chatbot API (app.py) runs correctly using FastAPI and Uvicorn.
 Confirms FAISS is initialized properly and can return relevant products from data.json.
 Validates SQLite (products.db) has expected tables (products and relationships) and is populated.
-Checks if the LLM (TheBloke/Mistral-7B-Instruct-v0.1-GGUF) is loaded and responding.
+Checks if the LLM is loaded and responding.
 Verifies /chat endpoint behavior by:
 Sending test queries and confirming responses.
 Ensuring FAISS returns semantic matches for vague queries.
