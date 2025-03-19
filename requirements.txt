@@ -1,12 +1,6 @@
-python==3.10
-pip
-torch  # Ensure CUDA-compatible PyTorch is installed
-cudatoolkit  # Installs CUDA libraries for GPU support
-faiss-cpu  # Use 'faiss-gpu' if your GPU supports it
+torch
+faiss-cpu
 numpy
-sqlite
-presidio-analyzer
-presidio-anonymizer
 accelerate
 transformers
 huggingface-hub
@@ -14,4 +8,7 @@ fastapi
 uvicorn
 sentence-transformers
 pydantic
-ctransformers[cuda]  # Install CUDA-compatible version of ctransformers
+ctransformers
+python-multipart
+presidio_analyzer
+presidio_anonymizer

@@ -1,29 +1,19 @@
-Prompt 1: Setting Up the Data Layer (setup_database.py)
-Create setup_database.py, a script that:
-
-Loads products and relationships from data.json.
-Creates a SQLite database (products.db) with:
-A products table (name, description, category).
-A relationships table (entity1, relationship, entity2).
-Inserts data dynamically, replacing duplicates.
-Prints a confirmation message when setup is complete.
-
-Prompt 2: app.py
-Create a FastAPI-based product chatbot API that integrates a database search and a locally hosted LLM. The API should:
+Prompt 1: app.py
+Create app.py a FastAPI-based product chatbot API that integrates a database search and a locally hosted LLM. The API should:
 
 Use FastAPI with CORS middleware.
 Have endpoints:
 GET / returning a simple HTML message.
 POST /chat accepting a user query, redacting PII using Presidio, performing a database search (SQLite, FAISS), and generating a response using an external LLM module.
 Separate concerns:
-Database search in database_search.py, using SQLite, FAISS, and relationship-based retrieval.
-LLM processing in llm_model.py, loading a GGUF-based Llama-2-7B-Chat model via ctransformers and generating responses.
+Database search in the existing database_search.py, using SQLite, FAISS, and relationship-based retrieval.
+LLM processing in the existing llm_model.py, loading a GGUF-based Llama-2-7B-Chat model via ctransformers and generating responses.
 Use Pydantic models for request/response validation.
 Run locally on 127.0.0.1:5000 with uvicorn, supporting live reload.
 Ensure error handling for missing data or model issues.
 Follow best practices for modularity and maintainability.
 
-Prompt 3: Creating the Chat Interface (index.html)
+Prompt 2: Creating the Chat Interface (index.html)
 Create index.html, a simple chat interface that:
 
 Lets users ask queries via a chatbox.
@@ -35,7 +25,7 @@ Supports "Enter" key submission.
 Handles errors if the API is unavailable.
 
 
-Prompt 4: Validation Prompt
+Prompt 3: Validation Prompt
 Create a validation script (validate_chatbot.py) that:
 
 Ensures the chatbot API (app.py) runs correctly using FastAPI and Uvicorn.
