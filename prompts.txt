@@ -1,17 +1,17 @@
 Prompt 1: app.py
-Create app.py a FastAPI-based product chatbot API that integrates a database search and a locally hosted LLM. The API should:
+Create app.py, a FastAPI-based product chatbot API that integrates a database search module and a locally hosted LLM. The API should:
 
-Use FastAPI with CORS middleware.
-Have endpoints:
-GET / returning a simple HTML message.
-POST /chat accepting a user query, redacting PII using Presidio, performing a database search (SQLite, FAISS), and generating a response using an external LLM module.
-Separate concerns:
-Database search in the existing database_search.py, using SQLite, FAISS, and relationship-based retrieval.
-LLM processing in the existing llm_model.py, loading a GGUF-based Llama-2-7B-Chat model via ctransformers and generating responses.
-Use Pydantic models for request/response validation.
-Run locally on 127.0.0.1:5000 with uvicorn, supporting live reload.
-Ensure error handling for missing data or model issues.
-Follow best practices for modularity and maintainability.
+Use FastAPI with CORS middleware to enable frontend interaction.
+Expose endpoints:
+GET / returns an HTML welcome page with API usage information.
+POST /chat accepts a user query, redacts PII using Presidio, performs a database search (leveraging SQLite, FAISS, and relationship-based retrieval), and generates a response using an external LLM module.
+Follow a modular architecture, using:
+DatabaseSearch from database_search.py for SQLite, FAISS, and relationship-based retrieval.
+LLMModel from llm_model.py for LLM processing, utilizing an open-source model for response generation.
+Implement Pydantic models for request/response validation.
+Run locally on 127.0.0.1:5000 using uvicorn, supporting live reload for development.
+Ensure error handling for missing data, model failures, or unexpected inputs.
+Follow best practices for maintainability and separation of concerns.
 
 Prompt 2: Creating the Chat Interface (index.html)
 Create index.html, a simple chat interface that:

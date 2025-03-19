@@ -12,3 +12,5 @@ ctransformers
 python-multipart
 presidio_analyzer
 presidio_anonymizer
+pytest
+requests

@@ -114,6 +114,8 @@ class DatabaseSearch:
 # Function to load data from SQLite and initialize FAISS index
 def load_data_from_db():
     global product_ids, index
+    print("\nInitializing FAISS index...")
+    
     conn = sqlite3.connect("products.db")
     cursor = conn.cursor()
     
@@ -121,15 +123,28 @@ def load_data_from_db():
     cursor.execute("SELECT name, description FROM products")
     products = cursor.fetchall()
     
+    if not products:
+        print("Warning: No products found in database")
+        return
+    
+    print(f"Found {len(products)} products in database")
+    
     product_ids = [product[0] for product in products]  # Store product names
     descriptions = [product[1] for product in products]  # Store descriptions
 
     # Encode descriptions for FAISS semantic search
+    print("Encoding product descriptions...")
     embeddings = encoder_model.encode(descriptions)
     embeddings = np.array(embeddings).astype("float32")
+    print(f"Encoded {embeddings.shape[0]} descriptions with {embeddings.shape[1]} dimensions")
 
-    # Add product embeddings to the FAISS index
+    # Reset and reinitialize the FAISS index
+    global index
+    index = faiss.IndexFlatL2(embeddings.shape[1])
     index.add(embeddings)
+    
+    print(f"Initialized FAISS index with {len(product_ids)} products")
+    print(f"Index size: {index.ntotal} vectors")
     conn.close()
 
 # Function to search relevant products in SQLite based on a query
@@ -137,12 +152,26 @@ def search_in_sqlite(query, top_k=5):
     conn = sqlite3.connect("products.db")
     cursor = conn.cursor()
     
-    # Perform an exact match or partial match in SQLite
-    cursor.execute("SELECT name, description, category FROM products WHERE description LIKE ?", ('%' + query + '%',))
-    results = cursor.fetchall()
-    conn.close()
+    # Search across name, description, and category fields
+    search_term = f"%{query}%"
+    cursor.execute("""
+        SELECT name, description, category 
+        FROM products 
+        WHERE name LIKE ? OR description LIKE ? OR category LIKE ?
+    """, (search_term, search_term, search_term))
     
-    return [{"name": result[0], "description": result[1], "category": result[2]} for result in results[:top_k]]
+    results = []
+    for row in cursor.fetchall():
+        results.append({
+            "name": row[0],
+            "description": row[1],
+            "category": row[2]
+        })
+        print(f"SQLite found: {row[0]} ({row[2]})")
+    
+    conn.close()
+    print(f"SQLite search found {len(results)} results")
+    return results[:top_k]
 
 # Function to search for similar products in FAISS (semantic search)
 def search_in_faiss(query, top_k=5):
@@ -156,8 +185,12 @@ def search_in_faiss(query, top_k=5):
     results = []
     for i, idx in enumerate(indices[0]):
         if idx < len(product_ids):  # Ensure valid index
-            results.append({"name": product_ids[idx], "similarity": float(1.0 / (1.0 + distances[0][i]))})  # Similarity score
+            name = product_ids[idx]
+            similarity = float(1.0 / (1.0 + distances[0][i]))
+            results.append({"name": name, "similarity": similarity})
+            print(f"FAISS found: {name} (similarity: {similarity:.3f})")
     
+    print(f"FAISS search found {len(results)} results")
     return results
 
 # Function to search for related entities using recursive SQL queries
@@ -230,22 +263,90 @@ def search_relationships(entity, depth=2):
 
 # Function to search the database for relevant results
 def search(query, top_k=5, depth=2):
-    # First, search in SQLite (structured product descriptions)
-    sqlite_results = search_in_sqlite(query, top_k)
+    print(f"\nSearching for: {query}")
     
-    # Then, search using FAISS (semantic similarity search)
-    faiss_results = search_in_faiss(query, top_k)
+    # Semantic search using FAISS
+    query_embedding = encoder_model.encode([query])
+    distances, indices = index.search(np.array(query_embedding).astype('float32'), k=top_k)
     
-    # Lastly, search for related entities using the recursive SQL relationships query
-    relationships_results = search_relationships(query, depth)
+    semantic_results = []
+    for i, idx in enumerate(indices[0]):
+        if idx < len(product_ids):
+            name = product_ids[idx]
+            similarity = float(1.0 / (1.0 + distances[0][i]))
+            semantic_results.append({
+                "name": name,
+                "similarity": similarity
+            })
     
-    # Combine all the results (SQLite, FAISS, and relationships)
+    # SQL search for exact matches
+    conn = sqlite3.connect("products.db")
+    cursor = conn.cursor()
+    
+    search_term = f"%{query}%"
+    cursor.execute("""
+        SELECT name, description, category 
+        FROM products 
+        WHERE name LIKE ? OR description LIKE ?
+    """, (search_term, search_term))
+    
+    sql_results = []
+    for row in cursor.fetchall():
+        sql_results.append({
+            "name": row[0],
+            "description": row[1],
+            "category": row[2]
+        })
+    
+    conn.close()
+    
+    # Get related entities for the most relevant product
+    relationships = []
+    if semantic_results:
+        relationships = search_relationships(semantic_results[0]["name"], depth)
+    
+    # Combine and deduplicate results
+    seen_names = set()
+    combined_results = []
+    
+    # Add semantic results first (they're more relevant)
+    for result in semantic_results:
+        if result["name"] not in seen_names:
+            seen_names.add(result["name"])
+            # Get full product details
+            conn = sqlite3.connect("products.db")
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT name, description, category 
+                FROM products 
+                WHERE name = ?
+            """, (result["name"],))
+            row = cursor.fetchone()
+            if row:
+                combined_results.append({
+                    "name": row[0],
+                    "description": row[1],
+                    "category": row[2],
+                    "similarity": result["similarity"]
+                })
+            conn.close()
+    
+    # Add SQL results that weren't already included
+    for result in sql_results:
+        if result["name"] not in seen_names:
+            seen_names.add(result["name"])
+            combined_results.append(result)
+    
+    # Sort by similarity if available
+    combined_results.sort(key=lambda x: x.get("similarity", 0), reverse=True)
+    
     return {
-        "sqlite_results": sqlite_results,
-        "faiss_results": faiss_results,
-        "relationships_results": relationships_results
+        "sqlite_results": combined_results[:top_k],
+        "relationships_results": relationships
     }
 
 # Call the load function to initialize the FAISS index when the script starts
+print("Starting database initialization...")
 load_data_from_db()
+print("Database initialization complete")
 
